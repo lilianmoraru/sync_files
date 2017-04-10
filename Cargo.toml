@@ -1,0 +1,16 @@
+[package]
+name = "sf"
+version = "0.1.0"
+authors = ["Lilian A. Moraru <lilian.moraru90@gmail.com>"]
+
+[dependencies]
+sha2 = "0.5"          # checking files consistency
+ssh2 = "0.3"          # connecting and copying files to a remote
+clap = "2.23"         # cli
+toml = "0.3"          # configuration file
+notify = "4.0"        # watch for directory changes
+cachedir = "0.1"      # backup the files that will be ovewritten
+pbr = "1.0.0-alpha.3" # progress info
+
+[build-dependencies]
+clap = "2.23"         # generate shell completion
