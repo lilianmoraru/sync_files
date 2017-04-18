@@ -18,7 +18,7 @@ pub fn local_file_hash(path: &Path) -> String {
 
     // Reserve a more appropriate buffer size
     let bytes_len = file.metadata().unwrap().len();
-    let mut buffer = Vec::<u8>::with_capacity(bytes_len as usize);
+    let mut buffer = Vec::<u8>::with_capacity(bytes_len as usize + 6);
 
     // Hash the contents
     file.read_to_end(&mut buffer).unwrap();
