@@ -29,8 +29,12 @@ pub fn build_cli() -> App<'static, 'static> {
             .takes_value(true)
             .value_name("PATH")
             .help("Sync to a local directory"))
+        .arg(Arg::with_name("dry-run")
+            .long("dry-run")
+            .help("Just show what would happen when executing the command"))
         .arg(Arg::with_name("watch")
             .short("w")
             .long("watch")
+            .conflicts_with("dry-run")
             .help("Automatically resyncs when the folder has changes"))
 }
