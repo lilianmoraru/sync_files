@@ -3,7 +3,7 @@ extern crate easy_hash;
 extern crate ssh2;
 extern crate clap;
 extern crate toml;
-extern crate regex;
+extern crate globset;
 extern crate notify;
 extern crate cachedir;
 extern crate pbr;
@@ -12,14 +12,9 @@ mod config;
 mod hash;
 mod ssh;
 mod cli;
+mod errors;
 
-error_chain! {
-    links {
-        Config(config::Error, config::ErrorKind);
-        Hash(hash::Error, hash::ErrorKind);
-        Ssh(ssh::Error, ssh::ErrorKind);
-    }
-}
+use errors::*;
 
 quick_main!(run);
 
