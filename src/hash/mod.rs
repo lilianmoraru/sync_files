@@ -7,8 +7,10 @@ use ssh2::Channel;
 
 use errors::*;
 
-pub fn local_file_hash(path: &Path) -> Result<String> {
+pub fn local_file_hash<P: AsRef<Path>>(path: P) -> Result<Vec<u8>> {
     use ring::digest::{ digest, SHA256 };
+
+    let path = path.as_ref();
 
     // We'll hash the contents of this file
     let mut file = File::open(path)
@@ -26,18 +28,12 @@ pub fn local_file_hash(path: &Path) -> Result<String> {
 
     let sha256sum = digest(&SHA256, &buffer).as_ref().to_vec();
 
-    // The error message is intended to be somewhat more readable to the user, not to the developer
-    // That's why technically, that wasn't the actual issue of the error
-    let sha256sum_string = String::from_utf8(sha256sum)
-                                  .chain_err(|| {
-                                      format!("Failed to obtain the hash for: {}",
-                                              path.display())
-                                  })?;
-
-    Ok(sha256sum_string)
+    Ok(sha256sum)
 }
 
-pub fn remote_file_hash(ch: &mut Channel, path: &Path) -> Result<String> {
+pub fn remote_file_hash<P: AsRef<Path>>(ch: &mut Channel, path: P) -> Result<Vec<u8>> {
+    let path = path.as_ref();
+
     // Construct the command to be executed over SSH
     let mut cmd = String::from("sha256sum ");
     let path = path.as_os_str().to_str()
@@ -49,9 +45,17 @@ pub fn remote_file_hash(ch: &mut Channel, path: &Path) -> Result<String> {
 
     ch.exec(&cmd).chain_err(|| format!("Failed to execute the command: {}", cmd))?;
 
-    let mut buffer = String::with_capacity(32 + 2); // 2: \r\n
-    ch.read_to_string(&mut buffer)
+    //TODO: Remove
+    // Leaving these comments in until I get to test the modifications on a target
+//    let mut buffer = String::with_capacity(32 + 2); // 2: \r\n
+    let mut sha256sum = Vec::<u8>::with_capacity(32 + 2);
+    ch.read_to_end(&mut sha256sum)
       .chain_err(|| format!("Failed to get the result of the command: {}", cmd))?;
 
-    Ok(buffer)
+    //TODO: Remove
+    // This also
+//    ch.read_to_string(&mut buffer)
+//      .chain_err(|| format!("Failed to get the result of the command: {}", cmd))?;
+
+    Ok(sha256sum)
 }
