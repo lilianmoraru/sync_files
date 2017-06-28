@@ -4,15 +4,15 @@ version = "0.1.0"
 authors = ["Lilian A. Moraru <lilian.moraru90@gmail.com>"]
 
 [dependencies]
-easy-hash = "0.1" # checking files consistency(uses the sha2 crate)
+ring = "0.11"     # checking files consistency(sha256sum)
 ssh2 = "0.3"      # connecting and copying files to a remote
-clap = "2.23"     # cli
-toml = "0.3"      # configuration file
-globset = "0.1"   # patterns of files to copy and commands that should be executed when matching
+clap = "2.25"     # cli
+toml = "0.4"      # configuration file
+globset = "0.2"   # patterns of files to copy and commands that should be executed when matching
 notify = "4.0"    # watch for directory changes
 cachedir = "0.1"  # backup the files that will be ovewritten
 pbr = "1.0.0"     # progress info
 error-chain = "0.10"
 
 [build-dependencies]
-clap = "2.23"         # generate shell completion
+clap = "2.25"         # generate shell completion

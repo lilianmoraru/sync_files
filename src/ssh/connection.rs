@@ -6,6 +6,7 @@ pub fn get_session<IP, U, P>(ip: IP, user: U, pass: P) -> Session
           U: AsRef<OsString>,
           P: AsRef<OsString>
 {
+    //TODO: Error handling(switch -> Session to Result<Session>?)
     let tcp = TcpStream::connect(ip).unwrap();
     let mut session = Session::new().unwrap();
     session.handshake(&tcp).unwrap();

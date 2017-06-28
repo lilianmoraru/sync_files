@@ -1,3 +1,4 @@
+#![allow(dead_code)] //TODO: Remove this
 use std::fs::File;
 use std::io::Read;
 use std::path::Path;
@@ -7,7 +8,7 @@ use ssh2::Channel;
 use errors::*;
 
 pub fn local_file_hash(path: &Path) -> Result<String> {
-    use easy_hash::{ Sha256, Hasher, HashResult };
+    use ring::digest::{ digest, SHA256 };
 
     // We'll hash the contents of this file
     let mut file = File::open(path)
@@ -22,9 +23,18 @@ pub fn local_file_hash(path: &Path) -> Result<String> {
     // Hash the contents
     file.read_to_end(&mut buffer)
         .chain_err(|| format!("Failed to read from: {}", path.display()))?;
-    let sha256sum = Sha256::hash(&buffer).hex();
 
-    Ok(sha256sum)
+    let sha256sum = digest(&SHA256, &buffer).as_ref().to_vec();
+
+    // The error message is intended to be somewhat more readable to the user, not to the developer
+    // That's why technically, that wasn't the actual issue of the error
+    let sha256sum_string = String::from_utf8(sha256sum)
+                                  .chain_err(|| {
+                                      format!("Failed to obtain the hash for: {}",
+                                              path.display())
+                                  })?;
+
+    Ok(sha256sum_string)
 }
 
 pub fn remote_file_hash(ch: &mut Channel, path: &Path) -> Result<String> {
@@ -39,7 +49,7 @@ pub fn remote_file_hash(ch: &mut Channel, path: &Path) -> Result<String> {
 
     ch.exec(&cmd).chain_err(|| format!("Failed to execute the command: {}", cmd))?;
 
-    let mut buffer = String::with_capacity(32 + 2); // 2: \n\r
+    let mut buffer = String::with_capacity(32 + 2); // 2: \r\n
     ch.read_to_string(&mut buffer)
       .chain_err(|| format!("Failed to get the result of the command: {}", cmd))?;
 

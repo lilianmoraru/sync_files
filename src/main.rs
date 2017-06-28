@@ -1,5 +1,5 @@
 #[macro_use] extern crate error_chain;
-extern crate easy_hash;
+extern crate ring;
 extern crate ssh2;
 extern crate clap;
 extern crate toml;
