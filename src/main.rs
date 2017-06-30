@@ -2,6 +2,7 @@
 extern crate ring;
 extern crate ssh2;
 extern crate clap;
+#[macro_use] extern crate serde_derive;
 extern crate toml;
 extern crate globset;
 extern crate notify;
